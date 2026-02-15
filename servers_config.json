@@ -1,0 +1,22 @@
+{
+    "mcpServers": {
+        "getroadnetwork": {
+            "command": "python",
+            "args": ["tool/getroadnetwork.py"],
+            "transport": "stdio"
+        },
+        "nettorou": {
+            "command": "python",
+            "args": ["tool/generate_rou.py"],
+            "transport": "stdio"
+        },
+        "mcp-server-firecrawl": {
+            "command": "npx",
+            "args": ["-y", "firecrawl-mcp"],
+            "env": {
+            "FIRECRAWL_API_KEY": "fc-76ef2c586ad648689919569e3f764a73"
+            },
+            "transport": "stdio"
+            }
+        }
+}

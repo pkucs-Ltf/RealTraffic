@@ -1,0 +1,52 @@
+# 交通灯控优化任务配置文件 - DQN版本
+task_name: "交通灯控优化任务"
+task_type: "traffic_light_optimization"
+
+# 城市设置
+city: "LA"
+
+# 数据文件路径
+data_paths:
+  route_file: "Experiment\\Opti_new_reaLA\\random2.xml"
+  real_flow_file: "Experiment/Opti_new_reaLA/best_LA_real.xml"
+  original_net_file: "Experiment/Opti_new_reaLA/LA_new.net.xml"
+  decisions_data_pkl: "pkl/Only_ppo_opti_Manha_tl_phase_result.pkl"
+  lane_averages_pkl: "pkl/Only_ppo_opti_Manha_lane_averages.pkl"
+  reward_static_pkl: "pkl/reward_static_all_Manha_single_dqn.pkl"
+ 
+# RL算法参数
+rl_config:
+  algorithm: "ppo" 
+  episodes: 30
+  end_time: 600
+  cal_reward_circle: 5
+  action_interval: 5
+  learning_start_time: 500
+  update_model_rate: 5
+  update_target_rate: 100
+  checkpoint_dir: "test_pth/rl_singleLA_stat_pporan2"
+  use_gui: false
+
+  # DQN特定参数
+  dqn_params:
+    lr: 0.001
+    batch_size: 32
+  
+    
+  # 奖励配置
+  reward_config:
+    local_weight: 0.75
+    rl_group_weight: 0.15
+    global_weight: 0.10
+    use_local_queue: true
+    use_local_waiting: true
+    use_local_throughput: true
+
+# 交通灯IDs（如果为空则自动检测）
+rl_tls_ids: []
+rl_tls_ids_all: False
+# 非RL策略
+non_rl_policy: "static"
+
+# 训练模式
+training: true

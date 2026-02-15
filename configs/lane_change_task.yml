@@ -1,0 +1,37 @@
+# 变道策略优化任务配置文件
+task_name: "城市道路资源协同优化"
+task_type: "lane_change_optimization"
+
+# 城市设置
+city: "Manha"
+
+use_dfs: True
+# 数据文件路径
+data_paths:
+  original_net_file: "coor_opti_Manha/Manha.net.xml"
+  route_file: "coor_opti_Manha/Manha.rou.xml"
+  decisions_data_pkl: "pkl/Manha_tl_phase_result_coor.pkl"
+  lane_averages_pkl: "pkl/Manha_lane_averages_coor.pkl" 
+  reward_static_pkl: "pkl/reward_static_all_Manha_coor.pkl"
+
+# 仿真参数
+simulation:
+  max_simulations: 100
+  end_time: 600
+  cal_reward_circle: 5
+
+# 优化算法参数
+optimization:
+  top_n: 20  # 贪心算法选择的顶级方案数量
+  max_proposals_per_round: 20  # 每轮测试的最大方案数
+  
+# 变道策略参数
+lane_change:
+  greedy_strategy: true
+  use_probability_ranking: true
+
+# 输出设置
+output:
+  results_dir_prefix: "coor_opti_Manha/optimization_run"
+  save_intermediate_results: true
+  generate_summary_report: true

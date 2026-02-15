@@ -1,0 +1,7 @@
+{
+    "dependencies": ["./"],
+    "graphs": {
+      "chatbot": "./main_sumomanus.py:graph"
+    },
+    "env": "environment.env"
+  }

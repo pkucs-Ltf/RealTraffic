@@ -1,0 +1,50 @@
+# 仿真任务配置文件
+task_name: "仿真任务"
+task_type: "simulation"
+
+# 数据文件路径
+data_paths:
+  net_file: "Experiment/Opti_new_Manha/Manha_new.net.xml"
+  rou_file: "Experiment/Opti_new_Manha/Realflow.xml"
+  iop_file: "Experiment/Opti_new_Manha/iop.rou.xml"
+  edge_limit_file: "pkl/edges_limit_Lat_lon_dict_temp_Manha.pkl"
+  od_file: "Experiment/Opti_new_Manha/test_Manha.pkl"
+  real_data_file: "sumo_values_true.pkl"
+  real_data_type: "pkl"
+  best_rou_file: "Experiment/Opti_new_Manha/best_rou15.xml"
+  grid_shp: "Experiment/Opti_new_Manha/taz_polygons.shp"
+  taz_file: "Experiment/Opti_new_Manha/mapcore_500m_Manha.taz.xml"
+
+# 仿真参数
+simulation:
+  max_od_iterations: 30
+  need_mergeRegion: false
+  third_adjust_firstSTEP: false
+
+# 优化器参数
+optimizer:
+  exploration_counter_limit: 10
+  test_scales: [1.0]
+  convergence_threshold: 0.001
+
+# 评估参数
+evaluation:
+  score_weight: 1.0
+  reward_weight: 1.0
+
+
+
+optimizer:
+  max_iterations: 30
+  convergence_threshold: 0.005  # 0.5%改进阈值
+  convergence_patience: 3  # 连续3次无改进则停止
+  
+# 仿真参数
+simulation:
+  end_time: 700  # 仿真时长(秒)
+  yellow_time: 3  # 黄灯时长
+  seed: 42  # 随机种子
+  step_length: 1.0  # 仿真步长
+  gui: false  # 是否使用GUI
+  sumo_binary: "sumo"
+# 文件路径配置

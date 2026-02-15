@@ -1,0 +1,95 @@
+# 变道策略优化任务配置文件
+task_name: "城市道路资源协同优化"
+task_type: "lane_change_optimization"
+
+# 城市设置
+city: "DC"
+
+use_dfs: True
+# 数据文件路径
+data_paths:
+  original_net_file: "Experiment/coor_opti_DC/DC.net.xml"
+  route_file: "Experiment/coor_opti_DC/DC.rou.xml"
+  decisions_data_pkl: "pkl/DC_tl_phase_result_coor_dqn.pkl"
+  lane_averages_pkl: "pkl/DC_lane_averages_coor_dqn.pkl"  
+  reward_static_pkl: "pkl/reward_static_all_DC_coor_dqn.pkl"
+
+# 仿真参数
+simulation:
+  max_simulations: 20
+  end_time: 600
+  cal_reward_circle: 5
+
+# 优化算法参数
+optimization:
+  top_n: 7  # 贪心算法选择的顶级方案数量
+  max_proposals_per_round: 7  # 每轮测试的最大方案数
+  
+# 变道策略参数
+lane_change:
+  greedy_strategy: true
+  use_probability_ranking: true
+
+# RL算法参数
+rl_config:
+  algorithm: "dqn"
+  episodes: 30
+  end_time: 600
+  cal_reward_circle: 5
+  action_interval: 5
+  learning_start_time: 256
+  update_model_rate: 10
+  update_target_rate: 100
+  checkpoint_dir: "E:/lang_ui/Experiment/coor_opti_DC/rl_DC_only_dqn_models_1020"
+  use_gui: false
+  
+  ppo_params:
+    lr: 0.0003
+    n_steps: 256
+    batch_size: 16
+    n_epochs: 10
+    gamma: 0.99
+    gae_lambda: 0.95
+    clip_range: 0.2
+
+  # DQN特定参数
+  dqn_params:
+    lr: 0.001
+    batch_size: 64
+  
+    
+  reward_config:
+    local_weight: 0.75
+    rl_group_weight: 0.15
+    global_weight: 0.10
+    use_local_queue: true
+    use_local_waiting: true
+    use_local_throughput: true
+# 交通灯IDs（如果为空则自动检测）
+# rl_tls_ids: []
+rl_tls_ids: ["cluster_42449576_8231906901_8231906902_8231906903_#1more","cluster_42456197_8231934413_8231934414_8231934415_#1more","cluster_42428444_8231906893_8231906894_8231906895_#1more",
+            "cluster_42442269_8231885396_8231885397_8231885398_#1more",
+            "cluster_42442273_8231885400_8231885401_8231885402_#1more",
+            "cluster_42433577_8231885404_8231885405_8231885406_#1more",
+            "cluster_42433578_8231934409_8231934410_8231934411_#1more",
+            "cluster_42442276_8231938427_8231938428_8231938429_#1more",
+            "cluster_42454423_8231934405_8231934406_8231934407_#1more",
+            "cluster_42436784_8231934401_8231934402_8231934403_#1more",
+            "cluster_42436779_8231934380_8231934381_8231934382_#1more",
+            "cluster_12187433932_12187433933_42432148_8231922388_#3more",
+            "cluster_12187433929_12187433931_42432152_8231922392_#3more",
+            "cluster_12187433927_12187433928_42432156_8231922397_#3more",
+            "cluster_12187433924_12187433926_42428438_7741546977_#3more"]
+rl_tls_ids_all: True
+# 非RL策略
+non_rl_policy: "greedy"
+given_tls_dict: True
+partial_train: True 
+# 训练模式
+training: true
+# 输出设置
+output:
+  results_dir_prefix: "Experiment/coor_opti_DC/optimization_run_dqn"
+  save_intermediate_results: true
+  generate_summary_report: true
+  

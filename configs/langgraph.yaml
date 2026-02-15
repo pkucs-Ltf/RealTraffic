@@ -1,0 +1,63 @@
+# LangGraph智能体配置
+llm:
+  model: "gpt-4o"  # 或其他可用模型
+  temperature: 0.1
+  max_tokens: 2000
+  timeout: 30
+
+# 决策节点配置
+nodes:
+  sense:
+    name: "SenseNode"
+    description: "感知当前仿真结果与真实数据的差异"
+    
+  think:
+    name: "ThinkNode" 
+    description: "分析误差模式，决策调整策略"
+    prompt_template: |
+      你是一个交通仿真优化专家。基于以下信息，分析误差模式并决定下一步调整策略：
+      
+      当前迭代: {iteration}
+      当前评分: {current_score}
+      历史最佳: {best_score}
+      
+      误差分析:
+      {error_analysis}
+      
+      历史调整记录:
+      {history}
+      
+      请根据以下规则决策：
+      1. 如果误差主要体现在全网流量过低/过高，调整scale
+      2. 如果误差集中在特定OD对，调整OD矩阵
+      3. 如果存在局部瓶颈或转向受阻，考虑车道连接调整
+      
+      请以JSON格式输出决策：
+      {{
+        "action": "scale|od|lane|stop",
+        "reasoning": "决策理由",
+        "parameters": {{具体参数}}
+      }}
+    
+  act:
+    name: "ActNode"
+    description: "执行调整动作"
+    
+  check_exit:
+    name: "CheckExitNode"
+    description: "检查是否满足收敛条件"
+
+# 图流程定义
+graph:
+  entry_point: "sense"
+  
+  edges:
+    sense: ["think"]
+    think: ["act"]
+    act: ["check_exit"]
+    check_exit: ["sense", "END"]  # 条件边，收敛则END，否则继续sense
+
+# 状态管理
+state:
+  max_history_length: 10  # 保留历史记录数量
+  checkpoint_interval: 5   # 每5次迭代保存checkpoint 
