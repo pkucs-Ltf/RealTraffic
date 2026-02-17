@@ -32,15 +32,49 @@ Reliable traffic simulation is crucial for urban planning and signal control, ye
 - **SUMO**: You must install [SUMO](https://eclipse.dev/sumo/) and set the `SUMO_HOME` environment variable.
   - *Note: If `SUMO_HOME` is not set, the script will raise an error.*
 - **PyTorch** (Optional): Required only for the **Optimization Mode**.
-  ```bash
-  pip install torch torchvision torchaudio
+```bash
+pip install torch torchvision torchaudio
+```
+
+### Recommended Hardware (Optional)
+
+- **Regional simulation**: CPU is usually sufficient for small-to-medium regions.
+- **Multi-day alignment (DTW) + calibration**: runtime grows with region size, number of days, and sampling frequency.
+- **Optimization (RL training)**: a GPU is recommended for faster training, but a CPU-only setup can still run small-scale tests.
 
 ## 2. Installation
 
-    
-    git clone [https://github.com/pkucs-Ltf/RealTraffic.git](https://github.com/pkucs-Ltf/RealTraffic.git)
-    cd RealTraffic
-    pip install -r requirements.txt
+```bash
+git clone https://github.com/pkucs-Ltf/RealTraffic.git
+cd RealTraffic
+pip install -r requirements.txt
+```
+
+## 🔑 API Key Setup (Required for Live Congestion Data)
+
+RealTraffic relies on external map services (e.g., Azure Maps) to query congestion states. You need to provide your own API key(s).
+
+We recommend **one** of the following approaches:
+
+- **Option A (Recommended): config file**
+
+Create `configs/api_keys.yaml` (do **NOT** commit secrets):
+
+```yaml
+azure_maps:
+  subscription_key: "YOUR_AZURE_MAPS_KEY"
+amap:
+  api_key: "YOUR_AMAP_KEY"
+```
+
+- **Option B: environment variables**
+
+```bash
+export AZURE_MAPS_KEY="YOUR_AZURE_MAPS_KEY"
+export AMAP_KEY="YOUR_AMAP_KEY"
+```
+
+If you do not have an API key, you can still reproduce the pipeline using **pre-collected congestion snapshots** (see “Offline / Sample Data” in the workflow below).
 
 
 
@@ -48,15 +82,18 @@ Reliable traffic simulation is crucial for urban planning and signal control, ye
 
 
 
-## 3.Quick Start
+## 3. Quick Start
 
 
 
 **Mode A: Traffic Simulation**
-Run the standard simulation calibrationn with default settings(Manhattan Region):
+Run the standard simulation calibration with default settings (Manhattan region):
 
-    
-    python run.py -t simulation -c configs\\simu_Manha.yml
+```bash
+python run.py -t simulation -c configs/simu_Manha.yml
+```
+
+> Windows users may use `configs\\simu_Manha.yml`.
 
 
 
@@ -81,6 +118,8 @@ Suitable for quick testing and instant simulation needs. The system fetches live
 python run.py -t simulation --bbox 39.90 116.30 39.95 116.40 --realtime
 ```
 
+> Note: Depending on the release/version you are using, real-time simulation may be configured via CLI flags or via a config file. If the CLI flags above are not available in your setup, please use a config-driven workflow.
+
 #### Option B: Peak-Period Pattern Simulation ⭐ Recommended
 
 This is the **primary approach discussed in our paper**. By collecting multi-day data and extracting stable commuting patterns, it generates higher-quality simulation environments.
@@ -99,6 +138,8 @@ python scripts/collect_traffic_data.py \
     --interval 20 \
     --output data/my_region/raw_traffic
 ```
+
+> Note: The helper scripts for data collection/alignment may be placed under different paths depending on the release. If you cannot find `scripts/`, search for the corresponding utilities in this repository and adapt the command accordingly.
 
 **Step 2: DTW Temporal Alignment**
 
@@ -137,6 +178,11 @@ calibration:
   max_iterations: 10
 ```
 
+**Offline / Sample Data (for reproducibility)**
+
+- If you do not have API keys, you can still reproduce the pipeline by providing **pre-collected congestion snapshots** and pointing `data_path` to them.
+- We are preparing a **small, processed sample dataset** to enable a one-command offline run (e.g., `data/sample_region/` + `configs/simu_sample.yml`). Once released, it will be documented here.
+
 ---
 
 ### 🎯 Mode 2: Traffic Optimization - Maximize Traffic Efficiency
@@ -164,6 +210,8 @@ Optimize vehicle lane-changing strategies to coordinate lane utilization:
 python run.py -t lane_change_optimization -c configs/lane_change_task_DC.yml
 ```
 
+> Note: Lane-change optimization is an optional downstream task and may not be enabled in all releases/configurations.
+
 ---
 
 ### 📋 Task Mode Summary
@@ -180,3 +228,9 @@ python run.py -t lane_change_optimization -c configs/lane_change_task_DC.yml
 
 * **Simulation Mode**: Generates trip info and summary statistics.
 * **Optimization Mode**: Creates a directory named `optimization_run_YYYYMMDD_HHMMSS/` containing model checkpoints and training logs.
+
+---
+
+## 📜 License
+
+This repository will include an explicit open-source license (e.g., MIT or Apache-2.0). Please check `LICENSE` once added.
