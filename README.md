@@ -29,8 +29,8 @@ Reliable traffic simulation is crucial for urban planning and signal control, ye
 ## 1. Prerequisites
 
 - **Python**: 3.11+
-- **SUMO**: You must install [SUMO](https://eclipse.dev/sumo/) and set the `SUMO_HOME` environment variable.
-  - *Note: If `SUMO_HOME` is not set, the script will raise an error.*
+- **SUMO**: You must install [SUMO](https://eclipse.dev/sumo/) and ensure `netconvert` / `sumo` are available in your system `PATH` (typically done by setting `SUMO_HOME` and adding `$SUMO_HOME/bin` to `PATH`).
+  - *Note: If `netconvert` is not found in `PATH`, the road network setup step will fail.*
 - **PyTorch** (Optional): Required only for the **Optimization Mode**.
 ```bash
 pip install torch torchvision torchaudio
@@ -167,8 +167,9 @@ task_type: "simulation"
 data_paths:
   net_file:        "data/my_region/net/region.net.xml"
   rou_file:        "data/my_region/my_region.rou.xml"
+  iop_file:        "data/my_region/iop.rou.xml"       # intermediate OD route file
   real_data_file:  "data/my_region/aligned_pattern/peak_state.npy"
-  real_data_type:  "npy"
+  real_data_type:  "npy"   # "npy" for DTW output, or "pkl" for raw snapshot dict
   edge_limit_file: "data/my_region/edges_limit.pkl"
   od_file:         "data/my_region/od.pkl"
   best_rou_file:   "data/my_region/best_rou.xml"
@@ -235,6 +236,16 @@ python run.py -t lane_change_optimization -c configs/lane_change_task_DC.yml
 
 * **Simulation Mode**: Generates trip info and summary statistics.
 * **Optimization Mode**: Creates a directory named `optimization_run_YYYYMMDD_HHMMSS/` containing model checkpoints and training logs.
+
+---
+
+## 🗃️ Dataset
+
+To support reproducibility, we provide the processed dataset via **Baidu Netdisk (Baidu Wangpan)** for download:
+
+- **Baidu Netdisk**: [Download](https://pan.baidu.com/s/1pajavSphqY3nWwHACM4ZoQ?pwd=ibck)
+
+> If you use the dataset in your research, please cite our paper.
 
 ---
 

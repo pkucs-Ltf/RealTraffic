@@ -171,7 +171,8 @@ class SimuTask:
             percentage = ((self.simulation_runner.numcars-19794) / 19794) * 100 if hasattr(self.simulation_runner, 'numcars') else None
             logger.info(f"当前车辆数量为 {self.simulation_runner.numcars}, 占19794的百分比为: {percentage:.2f}%")
             if reward>0.6 and abs(percentage)<40:
-                self.copy_file(self.state['best_rou_file'],os.path.join("Experiment\Opti_new_Manha","best_{}_{}.rou.xml".format(reward,percentage)))
+                experiment_dir = self.config.get('output', {}).get('experiment_dir', 'Experiment/output')
+                self.copy_file(self.state['best_rou_file'], os.path.join(experiment_dir, "best_{}_{}.rou.xml".format(reward, percentage)))
             
             if reward>0.80 and abs(percentage)<10:
                 
@@ -193,8 +194,10 @@ class SimuTask:
             logger.info(f'{reward_max} 最佳分数')
             logger.info(f'{history_average_speeds_best}')
         if best_sumodata:
-            dumpfile(history_average_speeds_best, 'pkl/history_average_speeds_best_Manha.pkl')
-            dumpfile(best_sumodata, 'pkl/best_sumodata.pkl')
+            output_dir = self.config.get('output', {}).get('pkl_dir', 'pkl')
+            os.makedirs(output_dir, exist_ok=True)
+            dumpfile(history_average_speeds_best, os.path.join(output_dir, 'history_average_speeds_best.pkl'))
+            dumpfile(best_sumodata, os.path.join(output_dir, 'best_sumodata.pkl'))
 
     def run_single_simulation(self):
         """运行单次仿真测试"""

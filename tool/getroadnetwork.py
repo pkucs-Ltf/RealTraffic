@@ -41,7 +41,7 @@ from tool.get_road_to_status import mcp_match_sumo_edges_to_real_road_status,con
 from tool.generate_map_html import generate_map_with_marker
 # 初始化 MCP 服务器
 mcp = FastMCP("RoadNetworkServer")
-API_KEY_GAODE = '2f9703a291eedacb4e5f3b9f2e9b1e85'
+API_KEY_GAODE = os.environ.get("AMAP_KEY", "")
 
 
 

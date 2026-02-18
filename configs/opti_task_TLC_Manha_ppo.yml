@@ -1,4 +1,4 @@
-# 交通灯控优化任务配置文件 - DQN版本
+# 交通灯控优化任务配置文件 - PPO版本
 task_name: "交通灯控优化任务"
 task_type: "traffic_light_optimization"
 
@@ -12,27 +12,29 @@ data_paths:
   original_net_file: "Experiment/Opti_new_Manha/Manha_new.net.xml"
   decisions_data_pkl: "pkl/Only_ppo_opti_Manha_tl_phase_result.pkl"
   lane_averages_pkl: "pkl/Only_ppo_opti_Manha_lane_averages.pkl"
-  reward_static_pkl: "pkl/reward_static_all_Manha_single_dqn.pkl"
- 
+  reward_static_pkl: "pkl/reward_static_all_Manha_single_ppo.pkl"
+
 # RL算法参数
 rl_config:
-  algorithm: "dqn" 
+  algorithm: "ppo"
   episodes: 30
   end_time: 600
-  cal_reward_circle: 5  
+  cal_reward_circle: 5
   action_interval: 5
   learning_start_time: 500
-  update_model_rate: 5  
+  update_model_rate: 5
   update_target_rate: 100
-  checkpoint_dir: "test_pth/rl_single_statdqn_ran4"
+  checkpoint_dir: "test_pth/rl_single_stat_manus_ppo"
   use_gui: false
 
-  # DQN特定参数
-  dqn_params:
-    lr: 0.001
-    batch_size: 32
-  
-    
+  # PPO特定参数（TODO：请根据实际训练经验填写）
+  ppo_params:
+    lr: 0.0003
+    batch_size: 64
+    # clip_range: 0.2
+    # n_epochs: 10
+    # entropy_coef: 0.01
+
   # 奖励配置
   reward_config:
     local_weight: 0.75
@@ -47,6 +49,6 @@ rl_tls_ids: ['cluster_12187433924_12187433926_42428438_7741546977_']
 rl_tls_ids_all: True
 # 非RL策略
 non_rl_policy: "greedy"
-  
+
 # 训练模式
 training: true
