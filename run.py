@@ -18,7 +18,7 @@ from typing import Dict, Any
 # 导入任务类
 from task.simu_task import SimuTask
 from task.opti_task_TLC import OptiTaskTLC
-from task.lane_change_task import LaneChangeTask
+from task.lane_change_task import LaneChangeTask  # noqa: F401 – used via available_tasks
 
 # 配置日志
 logging.basicConfig(
@@ -44,8 +44,13 @@ class TaskRunner:
                 'class': OptiTaskTLC,
                 'config': 'configs/opti_task_TLC_Manha_dqn.yml',
                 'description': '交通灯控优化任务 - 单独交通优化任务'
-            }
-            }
+            },
+            'lane_change_optimization': {
+                'class': LaneChangeTask,
+                'config': 'configs/lane_change_task_DC.yml',
+                'description': '变道策略优化任务 - 道路资源协同优化'
+            },
+        }
     
     def load_config(self, config_file: str) -> Dict[str, Any]:
         """
@@ -201,11 +206,13 @@ def create_argument_parser():
         epilog="""
 可用的任务类型:
   simulation                 - 仿真任务
-  traffic_light_optimization - 交通灯控优化任务  
+  traffic_light_optimization - 交通灯控优化任务
+  lane_change_optimization   - 变道策略优化任务
 
 示例用法:
   python run.py -t simulation
-  python run.py -t traffic_light_optimization -c configs/custom_config.yml
+  python run.py -t traffic_light_optimization -c configs/opti_task_TLC_Manha_dqn.yml
+  python run.py -t lane_change_optimization -c configs/lane_change_task_DC.yml
   python run.py --interactive
   python run.py --list-tasks
         """
@@ -214,10 +221,10 @@ def create_argument_parser():
     parser.add_argument(
         '-t', '--task-type',
         type=str,
-        choices=['simulation','traffic_light_optimization'],
+        choices=['simulation', 'traffic_light_optimization', 'lane_change_optimization'],
         default='simulation',
         help='任务类型 (默认: simulation)'
-    ) 
+    )
     
     parser.add_argument(
         '-c', '--config',

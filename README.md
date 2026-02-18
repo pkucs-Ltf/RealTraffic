@@ -110,15 +110,14 @@ Regional simulation builds high-fidelity traffic flow environments for arbitrary
 
 #### Option A: Real-time Simulation
 
-Suitable for quick testing and instant simulation needs. The system fetches live traffic data and runs simulation in real-time.
+Suitable for quick testing and instant simulation needs. Use `getdata.py` to fetch a single live traffic snapshot for the specified region.
 
 ```bash
-# Specify bounding box (lat/lon) for real-time data acquisition and simulation
+# Collect a single real-time snapshot and set up the SUMO network
 # Format: --bbox <lat_min> <lon_min> <lat_max> <lon_max>
-python run.py -t simulation --bbox 39.90 116.30 39.95 116.40 --realtime
+python getdata.py --bbox 39.90 116.30 39.95 116.40 --realtime \
+    --output data/my_region/raw_traffic
 ```
-
-> Note: Depending on the release/version you are using, real-time simulation may be configured via CLI flags or via a config file. If the CLI flags above are not available in your setup, please use a config-driven workflow.
 
 #### Option B: Peak-Period Pattern Simulation ⭐ Recommended
 
@@ -131,7 +130,7 @@ Collect traffic congestion information across multiple days during the same time
 ```bash
 # Collect data over multiple days (e.g., 5 consecutive days, morning peak 7:00-9:00)
 # Specify bounding box coordinates
-python scripts/collect_traffic_data.py \
+python getdata.py \
     --bbox 39.90 116.30 39.95 116.40 \
     --days 5 \
     --time_window "07:00-09:00" \
@@ -139,15 +138,13 @@ python scripts/collect_traffic_data.py \
     --output data/my_region/raw_traffic
 ```
 
-> Note: The helper scripts for data collection/alignment may be placed under different paths depending on the release. If you cannot find `scripts/`, search for the corresponding utilities in this repository and adapt the command accordingly.
-
 **Step 2: DTW Temporal Alignment**
 
 Use DTW (Dynamic Time Warping) algorithm to align multi-day sequences and extract stable commuting patterns:
 
 ```bash
 # Perform DTW alignment on multi-day data to extract stable patterns
-python scripts/dtw_alignment.py \
+python utils/dtw_alignment.py \
     --input data/my_region/raw_traffic \
     --output data/my_region/aligned_pattern
 ```
@@ -164,18 +161,28 @@ python run.py -t simulation -c configs/simu_my_region.yml
 Example configuration file (`configs/simu_my_region.yml`):
 
 ```yaml
-region:
-  name: "my_region"
-  data_path: "data/my_region/aligned_pattern"
-  bbox: [39.90, 116.30, 39.95, 116.40]
+task_name: "my_region simulation"
+task_type: "simulation"
+
+data_paths:
+  net_file:        "data/my_region/net/region.net.xml"
+  rou_file:        "data/my_region/my_region.rou.xml"
+  real_data_file:  "data/my_region/aligned_pattern/peak_state.npy"
+  real_data_type:  "npy"
+  edge_limit_file: "data/my_region/edges_limit.pkl"
+  od_file:         "data/my_region/od.pkl"
+  best_rou_file:   "data/my_region/best_rou.xml"
+  grid_shp:        "data/my_region/taz_polygons.shp"
+  taz_file:        "data/my_region/region.taz.xml"
 
 simulation:
-  duration: 3600  # Simulation duration (seconds)
-  step_length: 1  # Simulation step size
-  
-calibration:
-  enable: true
-  max_iterations: 10
+  end_time: 3600          # Simulation duration (seconds)
+  step_length: 1.0        # Simulation step size
+  max_od_iterations: 30   # Max bi-level calibration iterations
+
+optimizer:
+  convergence_threshold: 0.005
+  convergence_patience: 3
 ```
 
 **Offline / Sample Data (for reproducibility)**
